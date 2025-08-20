@@ -1,14 +1,13 @@
-import db from './db';
+import { prisma } from "./prisma";
 import type { Training } from "@/types/training";
 
-export function getTrainings(): Training[] {
-  const stmt = db.prepare('SELECT * FROM trainings');
-  const rows = stmt.all();
+export async function getTrainings(): Promise<Training[]> {
+  const trainings = await prisma.training.findMany();
 
-  return rows.map((row: any) => ({
-    id: row.id as number,
-    title: row.title as string,
-    image: row.image as string,
-    description: row.description as string,
+  return trainings.map((t: typeof trainings[number]) => ({
+    id: t.id,
+    title: t.title,
+    image: t.image,
+    description: t.description,
   }));
 }

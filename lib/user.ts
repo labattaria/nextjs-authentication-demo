@@ -1,24 +1,27 @@
-import db from "./db";
+import { prisma } from "./prisma";
 import type { User } from "@/types/user";
 
-export function createUser(email: string, password: string): number {
-  const result = db
-    .prepare("INSERT INTO users (email, password) VALUES (?, ?)")
-    .run(email, password);
+export async function createUser(email: string, password: string): Promise<number> {
+  const user = await prisma.user.create({
+    data: {
+      email,
+      password,
+    },
+  });
 
-  return result.lastInsertRowid as number;
+  return user.id;
 }
 
-export function getUserByEmail(email: string): User | undefined {
-  const row = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
+export async function getUserByEmail(email: string): Promise<User | undefined> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
 
-  if (!row) {
-    return undefined
-  };
+  if (!user) return undefined;
 
   return {
-    id: row.id as number,
-    email: row.email as string,
-    password: row.password as string,
+    id: user.id,
+    email: user.email,
+    password: user.password,
   };
 }
