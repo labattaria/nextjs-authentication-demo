@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@lucia-auth/adapter-sqlite": "^3.0.2",
     "@prisma/client": "^6.14.0",
     "@tailwindcss/postcss": "^4.1.12",
     "lucia": "^3.2.2",
