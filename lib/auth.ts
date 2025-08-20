@@ -1,12 +1,31 @@
-import { Lucia } from "lucia";
+import { Lucia, type Adapter, type DatabaseSession, type DatabaseUser } from "lucia";
 import { prisma } from "./prisma";
 import { cookies } from "next/headers";
 import type { SessionResult, AuthResult } from "@/types/auth";
-import type { DatabaseSession, DatabaseUser } from "lucia";
 
-const luciaPrismaAdapter = {
-  getUserSessions: async (userId: string | number): Promise<DatabaseSession[]> => {
-    return prisma.session.findMany({ where: { userId: Number(userId) } });
+// Маппим Prisma <-> Lucia
+function mapSession(s: any): DatabaseSession {
+  return {
+    id: s.id,
+    userId: String(s.userId),
+    expiresAt: s.expiresAt,
+    attributes: {}
+  };
+}
+
+function mapUser(u: any): DatabaseUser {
+  return {
+    id: String(u.id),
+    attributes: {}
+  };
+}
+
+const luciaPrismaAdapter: Adapter = {
+  getUserSessions: async (userId: string): Promise<DatabaseSession[]> => {
+    const sessions = await prisma.session.findMany({
+      where: { userId: Number(userId) }
+    });
+    return sessions.map(mapSession);
   },
 
   getSessionAndUser: async (
@@ -16,21 +35,16 @@ const luciaPrismaAdapter = {
     if (!session) return [null, null];
 
     const user = await prisma.user.findUnique({ where: { id: session.userId } });
-    return [session, user ?? null];
-  },
-
-  setUser: async (user: DatabaseUser): Promise<void> => {
-    await prisma.user.create({ data: user });
+    return [mapSession(session), user ? mapUser(user) : null];
   },
 
   setSession: async (session: DatabaseSession): Promise<void> => {
-    // исключаем поле attributes, чтобы Prisma не ругалась
-    const { attributes, ...sessionData } = session;
     await prisma.session.create({
       data: {
-        ...sessionData,
+        id: session.id,
         userId: Number(session.userId),
-      },
+        expiresAt: session.expiresAt
+      }
     });
   },
 
@@ -38,38 +52,35 @@ const luciaPrismaAdapter = {
     await prisma.session.delete({ where: { id: sessionId } });
   },
 
-  updateUser: async (userId: string | number, data: Partial<DatabaseUser>): Promise<void> => {
-    await prisma.user.update({ where: { id: Number(userId) }, data });
-  },
-
-  deleteUser: async (userId: string | number): Promise<void> => {
-    await prisma.user.delete({ where: { id: Number(userId) } });
-  },
-
   updateSessionExpiration: async (sessionId: string, expiresAt: Date): Promise<void> => {
-    await prisma.session.update({ where: { id: sessionId }, data: { expiresAt } });
+    await prisma.session.update({
+      where: { id: sessionId },
+      data: { expiresAt }
+    });
   },
 
-  deleteUserSessions: async (userId: string | number): Promise<void> => {
+  deleteUserSessions: async (userId: string): Promise<void> => {
     await prisma.session.deleteMany({ where: { userId: Number(userId) } });
   },
 
   deleteExpiredSessions: async (): Promise<void> => {
-    await prisma.session.deleteMany({ where: { expiresAt: { lt: new Date() } } });
-  },
+    await prisma.session.deleteMany({
+      where: { expiresAt: { lt: new Date() } }
+    });
+  }
 };
 
 export const lucia = new Lucia(luciaPrismaAdapter, {
   sessionCookie: {
     expires: false,
     attributes: {
-      secure: process.env.NODE_ENV === "production",
-    },
-  },
+      secure: process.env.NODE_ENV === "production"
+    }
+  }
 });
 
 export async function createAuthSession(userId: string | number): Promise<void> {
-  const session = await lucia.createSession(userId.toString(), {});
+  const session = await lucia.createSession(String(userId), {});
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 }
@@ -97,7 +108,7 @@ export async function verifyAuth(): Promise<SessionResult> {
 
   return {
     user: result.user ?? null,
-    session: result.session ?? null,
+    session: result.session ?? null
   };
 }
 
