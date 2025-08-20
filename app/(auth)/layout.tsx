@@ -17,10 +17,14 @@ export default function AuthRootLayout({ children }: AuthRootLayoutProps) {
       <header className="flex justify-between items-center max-w-[50rem] my-8 mx-auto">
         <p className="text-xl">Welcome back!</p>
         <form action={logout}>
-          <button className="font-inherit cursor-pointer py-2 px-6 border-none bg-[#6f34a9] text-[#d0cfd6] rounded hover:bg-[#5f2a8a] active:bg-[#5f2a8a]">Logout</button>
+          <button className="font-inherit cursor-pointer py-2 px-6 border-none bg-[#6f34a9] text-[#d0cfd6] rounded hover:bg-[#5f2a8a] active:bg-[#5f2a8a]">
+            Logout
+          </button>
         </form>
       </header>
-      {children}
+      <main className="max-w-[50rem] mx-auto">
+        {children}
+      </main>
     </>
   );
 }
