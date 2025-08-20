@@ -1,19 +1,27 @@
+@import "tailwindcss";
+
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 * {
   box-sizing: border-box;
 }
 
-html {
+/* html {
   font-family: 'Poppins', sans-serif;
 }
 
 body {
   margin: 0;
-  /* background-color: #333236; */
+  background-color: #333236;
   background: linear-gradient(#121214, #272629);
   color: #d0cfd6;
   min-height: 100vh;
+}
+
+main {
+  max-width: 50rem;
+  margin: 2rem auto;
 }
 
 h1 {
@@ -125,11 +133,6 @@ ul {
   background-color: #5f2a8a;
 }
 
-main {
-  max-width: 50rem;
-  margin: 2rem auto;
-}
-
 #training-sessions {
   max-width: 40rem;
   margin: 2rem auto;
@@ -169,4 +172,4 @@ main {
 #training-sessions li p {
   margin: 1rem;
   color: #7c7a80;
-}
+} */

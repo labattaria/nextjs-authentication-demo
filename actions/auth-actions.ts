@@ -4,12 +4,14 @@ import { createAuthSession, destroySession } from "@/lib/auth";
 import { hashUserPassword, verifyPassword } from "@/lib/hash";
 import { createUser, getUserByEmail } from "@/lib/user";
 import { redirect } from "next/navigation";
+import type { User } from "@/types/user";
+import type { AuthResult, AuthMode, FormErrors, PrevState } from "@/types/auth";
 
-export async function signup(prevState, formData) {
-  const email = formData.get("email");
-  const password = formData.get("password");
+export async function signup(_prevState: PrevState, formData: FormData): Promise<AuthResult> {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
-  let errors = {};
+  let errors: FormErrors = {};
 
   if (!email.includes("@")) {
     errors.email = "Please enter a valid email address.";
@@ -31,7 +33,8 @@ export async function signup(prevState, formData) {
     const id = createUser(email, hashedPassword);
     await createAuthSession(id);
     redirect("/training");
-  } catch (error) {
+    return {};
+  } catch (error: any) {
     if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
       return {
         errors: {
@@ -45,11 +48,11 @@ export async function signup(prevState, formData) {
   }
 }
 
-export async function login(prevState, formData) {
-  const email = formData.get("email");
-  const password = formData.get("password");
+export async function login(_prevState: PrevState, formData: FormData): Promise<AuthResult> {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
-  const existingUser = getUserByEmail(email);
+  const existingUser: User | undefined = getUserByEmail(email);
 
   if (!existingUser) {
     return {
@@ -71,9 +74,10 @@ export async function login(prevState, formData) {
 
   await createAuthSession(existingUser.id);
   redirect("/training");
+  return {};
 }
 
-export async function auth(mode, prevState, formData) {
+export async function auth(mode: AuthMode, prevState: PrevState, formData: FormData): Promise<AuthResult> {
   if (mode === "login") {
     return login(prevState, formData);
   }
@@ -81,7 +85,7 @@ export async function auth(mode, prevState, formData) {
   return signup(prevState, formData);
 }
 
-export async function logout() {
+export async function logout(): Promise<void> {
   await destroySession();
   redirect("/");
 }
