@@ -11,7 +11,7 @@ export async function signup(_prevState: PrevState, formData: FormData): Promise
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  let errors: FormErrors = {};
+  const errors: FormErrors = {};
 
   if (!email.includes("@")) {
     errors.email = "Please enter a valid email address.";
@@ -22,24 +22,21 @@ export async function signup(_prevState: PrevState, formData: FormData): Promise
   }
 
   if (Object.keys(errors).length > 0) {
-    return {
-      errors,
-    };
+    return { errors };
   }
 
   const hashedPassword = hashUserPassword(password);
 
   try {
-    const id = createUser(email, hashedPassword);
+    const id = await createUser(email, hashedPassword);
     await createAuthSession(id);
     redirect("/training");
     return {};
   } catch (error: any) {
-    if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+    if (error.code === "P2002") {
       return {
         errors: {
-          email:
-            "It seems like an account for the chosen email already exists.",
+          email: "It seems like an account for the chosen email already exists.",
         },
       };
     }
@@ -52,7 +49,7 @@ export async function login(_prevState: PrevState, formData: FormData): Promise<
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const existingUser: User | undefined = getUserByEmail(email);
+  const existingUser: User | undefined = await getUserByEmail(email); // async
 
   if (!existingUser) {
     return {

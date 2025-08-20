@@ -12,7 +12,7 @@ export default async function TrainingPage() {
     return null;
   }
 
-  const trainingSessions: Training[] = getTrainings();
+  const trainingSessions: Training[] = await getTrainings();
 
   return (
     <main className="max-w-[50rem] my-8 mx-auto">
