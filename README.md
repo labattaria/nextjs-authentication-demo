@@ -29,7 +29,7 @@ There is a predefined test user that you can use out of the box to check the fun
 **Email:** qwerty@example.com  
 **Password:** qwerty123
 
-The app in this repo is hosted on [![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)](#), hosting public URL:
+The app in this repo is hosted on [![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)](#), hosting public URL: [https://nextjs-authentication-demo-astra.vercel.app/](https://nextjs-authentication-demo-astra.vercel.app/)
 
 But you can use this app manually on your local machine
 

@@ -29,7 +29,7 @@
 **Email:** qwerty@example.com  
 **Пароль:** qwerty123
 
-Додаток у цьому репозиторії розгорнуто на сайтi [![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)](#), за цією URL-адресою:
+Додаток у цьому репозиторії розгорнуто на сайтi [![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)](#), за цією URL-адресою: [https://nextjs-authentication-demo-astra.vercel.app/](https://nextjs-authentication-demo-astra.vercel.app/)
 
 Але ви можете використовувати цей додаток вручну на своєму локальному комп’ютері
 
